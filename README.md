@@ -2,7 +2,7 @@
 
 **LoomLoom is an experimental control protocol for agentic software development.** It helps coding agents work autonomously inside explicit authority while keeping evidence, acceptance, and project state tied to exactly identified subjects.
 
-Current distribution: **v0.3.0-alpha.1 candidate**.
+Current distribution: **v0.3.0-alpha.1 — Open Alpha**.
 
 LoomLoom is not a coding agent, a replacement for CI, or a project-management system. It sits above replaceable agent runtimes and gives consequential agent work a small shared control model:
 
@@ -85,6 +85,10 @@ The alpha does **not** claim:
 - that runtime/session success implies project acceptance.
 
 LoomLoom deliberately keeps runtime-native session, trace, sandbox, approval, persistence, and subagent mechanics outside the Kernel unless cross-project evidence later justifies a shared abstraction.
+
+## Author
+
+Created and maintained by [Victor Cherniavsky](https://github.com/ejct) — Product Designer and UX Architect working on AI-native products, tools, and interaction systems.
 
 ## License
 
