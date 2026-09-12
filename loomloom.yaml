@@ -1,0 +1,53 @@
+project: LoomLoom
+artifact: distribution
+version: 0.3.0-alpha.1
+channel: alpha
+status: release_candidate
+metadata_role: static_distribution_metadata
+repository: ejct/LoomLoom
+release_branch: release/v0.3.0-alpha.1
+
+components:
+  development_kernel: 0.1
+  bootstrap: 0.1
+  agent_operating_behavior: 0.1
+  browser_extension_development_profile: 0.1
+
+identity:
+  git_subject: exact_commit_of_release_tag_or_checkout
+  detached_subject: loomloom-package.json.content_digest
+  note: "This file cannot self-identify the commit that contains it; exact Git identity comes from the immutable tag/ref and commit metadata."
+
+authority:
+  released_distribution: "exact Git tag/commit and repository contents at that tag"
+  internal_governance: "may prepare future releases but is not required to consume or reinterpret an existing tagged release"
+  skill_authority: none
+
+scope:
+  includes:
+    - development_kernel_v0.1_public_specification
+    - bootstrap_v0.1
+    - decision_05_agent_operating_behavior_v0.1_projection
+    - decision_06_browser_extension_development_profile_v0.1_projection
+    - exact_project_pinning
+    - portable_package_identity
+  excludes_by_default:
+    - unreleased_continuity_candidates
+    - research_proposals
+    - internal_audit_history
+    - private_governance_workspace
+
+rigor: R1
+topology:
+  - integrated
+
+release:
+  label: open_alpha
+  compatibility_policy: VERSIONING.md
+  changelog: CHANGELOG.md
+  quickstart: docs/QUICKSTART.md
+  public_kernel: docs/DEVELOPMENT_KERNEL.md
+
+notes:
+  - "This branch is a release candidate until an exact subject is verified and explicitly accepted for publication."
+  - "Do not treat branch HEAD, test success, or release packaging as acceptance by itself."

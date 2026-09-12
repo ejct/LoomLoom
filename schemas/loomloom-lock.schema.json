@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ejct/LoomLoom/schemas/loomloom-lock.schema.json",
+  "title": "LoomLoom project lock",
+  "type": "object",
+  "required": ["schema_version", "repository", "commit", "distribution"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "repository": {
+      "type": "string",
+      "pattern": "^[^/\\s]+/[^/\\s]+$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "distribution": {
+      "enum": ["git_commit", "github_release"]
+    },
+    "release": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

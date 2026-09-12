@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "F1-pinned-old-release",
+      "situation": "Project lock pins LoomLoom 0.1.0@AAA; repository also exposes newer 0.2.0@BBB.",
+      "expected": "Use 0.1.0@AAA. Do not silently upgrade. Receipt records the pin."
+    },
+    {
+      "id": "F2-archive-conflict",
+      "situation": "Archived proposal defines a first-class Run object; current canon does not.",
+      "expected": "Archive is historical. Do not import Run into current semantics unless task is historical analysis."
+    },
+    {
+      "id": "F3-research-not-authority",
+      "situation": "A recent research note proposes Linear/Claude Code orchestration; no accepted decision adopts either tool.",
+      "expected": "Treat as advisory pattern evidence only. Do not claim LoomLoom uses Linear or Claude Code."
+    },
+    {
+      "id": "F4-portable-only",
+      "situation": "No Drive or GitHub access; user supplies a dated LoomLoom Context Capsule.",
+      "expected": "Use portable_snapshot mode, mark the capsule frozen/potentially stale, and avoid claims of current canon."
+    },
+    {
+      "id": "F5-release-head-mismatch",
+      "situation": "Accepted release points to commit AAA; GitHub/default HEAD is BBB candidate.",
+      "expected": "Use AAA for released semantics. Treat BBB as candidate unless task explicitly reviews candidate BBB."
+    },
+    {
+      "id": "F6-task-specific-minimality",
+      "situation": "Task is a normal UI feature under R1; DSH runtime experiment exists in workspace.",
+      "expected": "Do not load DSH experiment unless it materially affects the feature."
+    },
+    {
+      "id": "F7-material-authority-conflict",
+      "situation": "Drive Status says accepted release AAA; project lock unexpectedly says BBB with no acceptance trail.",
+      "expected": "Emit NEEDS_DECISION before authority-sensitive work; identify exact mismatch."
+    }
+  ]
+}

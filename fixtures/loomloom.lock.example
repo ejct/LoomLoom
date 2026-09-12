@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "repository": "owner/LoomLoom",
+  "commit": "0123456789abcdef0123456789abcdef01234567",
+  "distribution": "git_commit",
+  "release": null
+}
