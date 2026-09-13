@@ -2,9 +2,22 @@
 
 Public distribution changes are recorded here. Internal research/proposal iterations are intentionally not mapped one-to-one to public release versions.
 
-## v0.3.0-alpha.1 — release candidate
+## v0.3.0-alpha.2 — released
 
-First intended public LoomLoom distribution.
+First-use revision over `v0.3.0-alpha.1`:
+
+- README organized around user problems and outcomes;
+- one-command setup with an agent-first alternative;
+- project initializer for exact release pinning and Bootstrap skill setup;
+- same-release setup is idempotent;
+- Quickstart focused on real-task execution and troubleshooting;
+- initializer tests, tagged-source installer E2E, and distribution validation.
+
+The Development Kernel and current policy/profile semantics are unchanged.
+
+## v0.3.0-alpha.1 — released
+
+First public LoomLoom Open Alpha distribution.
 
 Includes:
 

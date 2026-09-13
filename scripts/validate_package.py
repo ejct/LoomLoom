@@ -8,6 +8,7 @@ required = [
     "START_HERE.md",
     "AGENTS.md",
     "loomloom.yaml",
+    "install.py",
     "bootstrap/BOOTSTRAP.md",
     "bootstrap/CONTEXT_RECEIPT.md",
     "bootstrap/ROUTING.md",
@@ -15,8 +16,11 @@ required = [
     "bootstrap/PACKAGE_IDENTITY.md",
     "schemas/loomloom-lock.schema.json",
     "fixtures/loomloom.lock.example",
+    "scripts/init_project.py",
     "scripts/validate_loomloom_pin.py",
     "scripts/package_identity.py",
+    "tests/test_init_project.py",
+    "tests/test_installer_e2e.py",
     "tests/test_lock_validation.py",
     "tests/test_package_identity.py",
     ".agents/skills/loomloom-bootstrap/SKILL.md",
@@ -113,6 +117,18 @@ if lock_example.is_file():
     except Exception as e:
         errors.append(f"lock example JSON invalid: {e}")
 
+metadata = ROOT / "loomloom.yaml"
+installer = ROOT / "install.py"
+if metadata.is_file() and installer.is_file():
+    version_match = re.search(r"^version:\s*([^\s]+)$", metadata.read_text(encoding="utf-8"), flags=re.M)
+    installer_match = re.search(r'^DEFAULT_VERSION\s*=\s*"v([^"]+)"$', installer.read_text(encoding="utf-8"), flags=re.M)
+    if not version_match:
+        errors.append("loomloom.yaml: missing distribution version")
+    elif not installer_match:
+        errors.append("install.py: missing DEFAULT_VERSION")
+    elif version_match.group(1) != installer_match.group(1):
+        errors.append("distribution metadata / installer version drift")
+
 if errors:
     print("FAIL")
     for e in errors:
@@ -120,4 +136,4 @@ if errors:
     sys.exit(1)
 
 print("PASS")
-print("LoomLoom Bootstrap candidate package structure is internally valid.")
+print("LoomLoom distribution package structure is internally valid.")

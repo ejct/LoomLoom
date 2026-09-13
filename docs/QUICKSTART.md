@@ -1,82 +1,66 @@
 # LoomLoom Quickstart
 
-This is the smallest path for trying LoomLoom on an existing software project.
+Start from the root of an existing project. You do not need to create LoomLoom files by hand.
 
-## 1. Choose an exact LoomLoom release
+## 1. Set up LoomLoom
 
-Use an immutable LoomLoom release/tag. Do not use branch HEAD as a substitute for a release.
+On macOS or Linux:
 
-For this release candidate the intended public version is:
-
-`v0.3.0-alpha.1`
-
-When the release is tagged, use the exact commit shown by the release/tag as the binding identity.
-
-## 2. Pin LoomLoom in the project
-
-Create `.loomloom/loomloom.lock` using `schemas/loomloom-lock.schema.json` and the example in `fixtures/loomloom.lock.example`.
-
-Conceptually:
-
-```json
-{
-  "schema_version": 1,
-  "repository": "ejct/LoomLoom",
-  "commit": "<exact 40-character release commit>",
-  "distribution": "github_release",
-  "release": "v0.3.0-alpha.1"
-}
+```sh
+curl -fsSL https://raw.githubusercontent.com/ejct/LoomLoom/v0.3.0-alpha.2/install.py -o /tmp/loomloom-install.py && python3 /tmp/loomloom-install.py . && rm -f /tmp/loomloom-install.py
 ```
 
-The commit is binding. The release name is descriptive provenance and never overrides the commit.
+Setup uses the released tag, resolves its exact 40-character commit, and leaves these project-local surfaces:
 
-## 3. Give the agent the Bootstrap
+```text
+.loomloom/loomloom.lock
+.agents/skills/loomloom-bootstrap/
+```
 
-If the runtime supports repository Agent Skills, copy or expose the exact release copy of:
+It is deliberately fail-closed:
 
-`.agents/skills/loomloom-bootstrap/`
+- an existing different LoomLoom pin is not silently replaced;
+- an existing different Bootstrap skill is not overwritten;
+- rerunning setup for the same exact release is idempotent.
 
-and invoke the `loomloom-bootstrap` skill.
+If you prefer, hand the setup to your coding agent instead:
 
-Otherwise give the agent the exact released LoomLoom repository/tag and instruct it to follow `START_HERE.md`.
+> Set up LoomLoom v0.3.0-alpha.2 from https://github.com/ejct/LoomLoom/tree/v0.3.0-alpha.2, using that release’s installer. Pin the exact tagged commit, then use LoomLoom for this task: **<your real task>**.
 
-A useful first instruction is:
+## 2. Give the agent the real task
 
-> Bootstrap this project with the exact pinned LoomLoom release, emit a LoomLoom Context Receipt, then continue the requested task within the resolved authority and evidence boundaries.
+If your runtime discovers repository Agent Skills automatically:
 
-## 4. Expect a Context Receipt
+> Use LoomLoom for this task: **<your real task>**.
 
-Before authority-sensitive implementation/evaluation work, the agent should resolve and report material state such as:
+Otherwise tell it to read `.agents/skills/loomloom-bootstrap/SKILL.md` first.
 
-- LoomLoom identity and exact commit;
+Before consequential work, the agent should be able to report:
+
+- exact LoomLoom identity: `ejct/LoomLoom@<40-char commit>`;
 - project/task identity;
-- material sources actually read;
-- authority constraints;
-- rigor/topology when material;
-- conflicts or missing material context;
+- material authority constraints;
+- material sources it actually read;
+- evidence expectations when they affect the task;
 - the next bounded action.
+
+This is the LoomLoom Context Receipt. It is a compact receipt for material execution context, not a transcript and not a universal evidence log.
 
 `READY` means work can proceed.
 `INCOMPLETE` means useful bounded work may continue with limited claims.
 `NEEDS_DECISION` means a material authority conflict blocks the requested authority-sensitive action.
 
-The receipt may exist only in the active session when no later actor needs it. When durable continuation/review materially depends on it, reuse a project-native current-state/documentation owner if one exists; otherwise persist the fallback at `.loomloom/context-receipt.yaml`. Do not create duplicate state merely to satisfy LoomLoom.
+## 3. Run a real task
 
-See `bootstrap/CONTEXT_RECEIPT.md`.
-
-## 5. Run one real bounded task
-
-Start with an existing task where evidence matters: a retained feature, a bug fix, a migration, or another change that you would normally ask a coding agent to implement and verify.
-
-LoomLoom does not require every K1–K12 primitive to become a separate file. Use the project’s existing issue/spec/test/documentation surfaces when they already express the needed semantics.
+Good first tasks are work you would already trust to a coding agent but where a wrong scope or weak success claim would cost time: a bug fix, retained feature, migration, multi-file refactor, browser-extension repair, or work that will cross sessions.
 
 The practical loop is:
 
 `intent/contract → authorized implementation → exact candidate → observations/evidence → evaluation → explicit acceptance when required → reconciliation`
 
-At task close, reconcile only the durable state needed for a later actor to understand current truth and the next valid action. Verification evidence should normally remain in project-native surfaces such as tests, CI results, build output, version-control state, issue/spec records, or existing evidence documentation. LoomLoom v0.3 does not require a universal post-task evidence schema, evidence receipt, journal, or telemetry file.
+LoomLoom should reuse the project’s own issue/spec/test/CI/documentation surfaces when they already express the needed truth. It should not manufacture extra files merely to materialize every control concept.
 
-## 6. Keep claims proportional to evidence
+## 4. Expect evidence proportional to the claim
 
 Examples:
 
@@ -86,8 +70,50 @@ Examples:
 - CI success does not accept a candidate;
 - a merge does not prove post-integration correctness.
 
-## 7. Upgrade explicitly
+Verification evidence normally stays in project-native surfaces such as tests, CI results, build output, version-control state, issue/spec records, or existing evidence documentation.
 
-When a newer LoomLoom version exists, do not silently follow it. Update the project pin as an explicit project change and re-evaluate any material compatibility differences.
+## 5. Let continuation state stay small
 
-See `VERSIONING.md`.
+A Context Receipt may exist only in the active session when nobody later needs it. When durable continuation or review materially depends on it, reuse an adequate project-native current-state/documentation owner if one exists; otherwise `.loomloom/context-receipt.yaml` is the fallback.
+
+Do not create duplicate state just to satisfy LoomLoom.
+
+## What setup actually pins
+
+`.loomloom/loomloom.lock` records the exact LoomLoom source identity. Conceptually:
+
+```json
+{
+  "schema_version": 1,
+  "repository": "ejct/LoomLoom",
+  "commit": "<exact 40-character release commit>",
+  "distribution": "github_release",
+  "release": "v0.3.0-alpha.2"
+}
+```
+
+The commit is binding. The human-readable release name is provenance and never overrides the exact commit.
+
+## Troubleshooting
+
+### The project already has a different LoomLoom pin
+
+Treat this as an explicit upgrade decision. Do not replace the lock automatically. Review compatibility, then change the project pin deliberately.
+
+### The Bootstrap skill already exists and differs
+
+Do not overwrite it blindly. Determine whether it is a local customization, another LoomLoom version, or unrelated project material.
+
+### The runtime does not auto-discover Agent Skills
+
+Tell the agent to read `.agents/skills/loomloom-bootstrap/SKILL.md` explicitly. The skill is the compact navigator; deeper LoomLoom sources are loaded only when they can materially affect the task or claim.
+
+### The agent cannot access GitHub
+
+Supply the exact tagged LoomLoom release/package through a permitted local or connected source. Preserve the same exact identity; do not substitute mutable branch HEAD.
+
+## Upgrade explicitly
+
+When a newer LoomLoom version exists, upgrading is a project change. Resolve the new exact release commit, replace the installed Bootstrap projection only with explicit intent, update the project lock, and re-evaluate material compatibility differences.
+
+For deeper semantics, see `docs/DEVELOPMENT_KERNEL.md`. For versioning, see `VERSIONING.md`.

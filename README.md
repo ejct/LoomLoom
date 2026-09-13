@@ -1,90 +1,134 @@
 # LoomLoom
 
-**LoomLoom is an experimental control protocol for agentic software development.** It helps coding agents work autonomously inside explicit authority while keeping evidence, acceptance, and project state tied to exactly identified subjects.
+**Keep coding agents inside the task — and make their work verifiable.**
 
-Current distribution: **v0.3.0-alpha.1 — Open Alpha**.
+Coding agents are fast, but consequential work becomes hard to trust when scope drifts, “tests pass” is detached from the exact code that was tested, important state lives only in chat, or the next session has to reconstruct what happened from scratch.
 
-LoomLoom is not a coding agent, a replacement for CI, or a project-management system. It sits above replaceable agent runtimes and gives consequential agent work a small shared control model:
+LoomLoom adds a lightweight control layer around the coding agent you already use. It makes scope and decision boundaries explicit, ties verification evidence to the exact code it came from, and leaves enough durable project state for the next agent to continue correctly.
+
+Current distribution: **v0.3.0-alpha.2 — Open Alpha**.
+
+## Start in one command
+
+From the root of an existing project on macOS or Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ejct/LoomLoom/v0.3.0-alpha.2/install.py -o /tmp/loomloom-install.py && python3 /tmp/loomloom-install.py . && rm -f /tmp/loomloom-install.py
+```
+
+The installer resolves the immutable release tag to its exact Git commit, installs the Bootstrap skill into `.agents/skills/loomloom-bootstrap/`, and records that exact identity in `.loomloom/loomloom.lock`. It refuses to silently replace a different pin or overwrite a different existing skill.
+
+Then give your coding agent the task you actually care about:
+
+> Use LoomLoom for this task: fix the cache invalidation bug and verify the result.
+
+You should not need to read LoomLoom documentation, create JSON by hand, or copy files yourself before trying it.
+
+### Or let the agent set it up
+
+Give this to your coding agent from the project root:
+
+> Set up LoomLoom v0.3.0-alpha.2 from https://github.com/ejct/LoomLoom/tree/v0.3.0-alpha.2, using that release’s installer. Pin the exact tagged commit, then use LoomLoom for this task: **<your real task>**.
+
+If your runtime automatically discovers repository Agent Skills, subsequent tasks can stay short. If it does not, tell it to read `.agents/skills/loomloom-bootstrap/SKILL.md` first.
+
+## The problems LoomLoom is for
+
+### “The agent fixed it” — but also changed three unrelated things
+
+LoomLoom resolves the task boundary and authority before consequential work, so capability does not silently become permission.
+
+### “Tests pass” — but what exactly did they prove?
+
+Evidence is tied to an exactly identified candidate. A unit test, page probe, CI run, real-profile check, or production observation can support only the claim it actually exercised.
+
+### The task spans sessions and the next agent starts from folklore
+
+LoomLoom makes the current authoritative state, exact LoomLoom pin, material context, and unresolved constraints recoverable without requiring hidden chat history.
+
+### The agent keeps handing routine verification back to you
+
+Within explicit authority, LoomLoom tells agents to close safe edit → verify → inspect → correct loops themselves and to try lower-interference automation before declaring a routine step human-only.
+
+## What changes in practice
+
+| Without LoomLoom | With LoomLoom |
+| --- | --- |
+| “Fix this” can expand into whatever the agent thinks is useful | Scope and authority are resolved before consequential work |
+| “Tests pass” is a sentence in chat | Evidence refers to the exact candidate it observed |
+| CI success, merge, and acceptance blur together | Observation, evaluation, acceptance, and integration stay distinct |
+| Important state disappears with the session | Material current state can survive into the next session |
+| Every new agent reloads everything “just in case” | Context is loaded selectively when it can change the task or claim |
+
+LoomLoom does not replace your coding agent, Git, CI, issue tracker, tests, or project documentation. It uses those existing surfaces where they already carry the needed truth.
+
+## A normal LoomLoom task
+
+You ask for a real change. The agent should then:
+
+1. resolve the project’s exact LoomLoom pin and material project authority;
+2. emit a concise Context Receipt when authority-sensitive work needs it;
+3. implement only within the resolved task boundary;
+4. verify the exact candidate with evidence proportionate to the claim;
+5. ask for a decision only when a real authority boundary requires one;
+6. reconcile the smallest durable state needed for correct continuation.
+
+The underlying control model is:
 
 `INTENT → CONTRACT → AUTHORITY → CANDIDATE → OBSERVATION → EVIDENCE → VERDICT → ACCEPTANCE → INTEGRATION → RECONCILIATION`
 
-## Why
+You do **not** need to learn that model before trying LoomLoom.
 
-Coding agents can generate and modify software quickly. The difficult part is keeping clear answers to questions such as:
+## Good first tasks
 
-- What was the agent actually authorized to change?
-- What exact candidate did a test result describe?
-- Does a successful run prove the intended claim, or only a narrower surrogate?
-- Who is allowed to accept or promote the result?
-- Can a fresh agent continue from durable project state without hidden chat history?
+LoomLoom is most useful when an agent’s mistake, overreach, or unverifiable success claim would cost real time:
 
-LoomLoom makes those boundaries explicit without requiring one specific agent, IDE, CI provider, or repository layout.
+- a retained feature or multi-file refactor;
+- a bug fix with meaningful regression evidence;
+- a migration or dependency change;
+- browser-extension work where page behavior and extension-runtime behavior differ;
+- a task that will cross sessions or agents;
+- work where “done” must be distinguishable from “accepted” or “integrated.”
 
-## Current alpha
+For a throwaway prototype where you do not care about scope, reproducibility, or future continuation, LoomLoom may be unnecessary overhead.
 
-The current public alpha contains:
+## What setup adds
 
-- Development Kernel v0.1 public specification;
-- Bootstrap v0.1 and an Agent Skill;
-- exact project pinning and portable package identity;
-- Agent Operating Behavior v0.1;
-- Browser Extension Development Profile v0.1;
-- Context Receipt and selective-context routing;
-- validators, fixtures, and tests used by the Bootstrap distribution.
+```text
+.loomloom/
+  loomloom.lock
 
-This is an **early open alpha**, not a stable API. Later 0.x releases may change workflow materialization and distribution behavior as dogfood evidence accumulates. The five Kernel invariants and exact-subject/evidence discipline are the current semantic baseline, but no 0.x compatibility promise should be inferred beyond the versioning policy.
+.agents/
+  skills/
+    loomloom-bootstrap/
+```
 
-## Try it
+The lock binds the project to one exact LoomLoom commit. The installed skill is a navigator and operating projection; it does not create authority by itself.
 
-Start with [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
+Running setup again for the same release is safe and idempotent. Moving to a different release is an explicit project change, never a silent upgrade.
 
-If your agent supports repository Agent Skills, the distribution includes:
+## Open Alpha boundaries
 
-`.agents/skills/loomloom-bootstrap/SKILL.md`
+This is an early Open Alpha. The current release does **not** claim:
 
-Otherwise use [`START_HERE.md`](START_HERE.md).
+- a stable 1.0 API or compatibility promise;
+- broad cross-runtime validation;
+- a finished generic Kernel implementation;
+- automatic acceptance or promotion of agent work;
+- that one kind of test proves behavior it did not exercise.
 
-A consuming project should pin the exact LoomLoom release/commit in `.loomloom/loomloom.lock` and must not silently upgrade to branch HEAD.
+## Go deeper when you need to
 
-## Public authority
+You should not need these documents to get started. They exist for deeper operation and verification:
 
-For a released LoomLoom version, the **exact Git tag and the repository contents at that tag are the public distribution authority**. The exact Git commit identifies the released subject.
-
-Important surfaces:
-
-- [`docs/DEVELOPMENT_KERNEL.md`](docs/DEVELOPMENT_KERNEL.md) — public Development Kernel v0.1 specification;
-- [`policy/agent-operating-behavior.md`](policy/agent-operating-behavior.md) — accepted operating-policy projection bundled in this distribution;
-- [`profiles/browser-extension-development.md`](profiles/browser-extension-development.md) — accepted browser-extension profile projection;
-- [`START_HERE.md`](START_HERE.md) — authority-aware entry point;
-- [`loomloom.yaml`](loomloom.yaml) — machine-readable distribution metadata;
-- [`VERSIONING.md`](VERSIONING.md) — release and component versioning;
+- [`docs/QUICKSTART.md`](docs/QUICKSTART.md) — setup behavior, troubleshooting, and manual details;
+- [`docs/DEVELOPMENT_KERNEL.md`](docs/DEVELOPMENT_KERNEL.md) — K1–K12 and the full public control model;
+- [`policy/agent-operating-behavior.md`](policy/agent-operating-behavior.md) — agent operating policy projection;
+- [`profiles/browser-extension-development.md`](profiles/browser-extension-development.md) — browser-extension evidence and test profile;
+- [`VERSIONING.md`](VERSIONING.md) — release and compatibility model;
 - [`CHANGELOG.md`](CHANGELOG.md) — public release lineage.
 
-Internal research, experiments, audit history, and future governance work may exist outside the public release. They are **not required to consume this released version and do not override the tagged public subject**.
-
-## Five invariants
-
-1. **Authority** — No capability creates authority by itself.
-2. **Identity** — Evidence always refers to an exactly identified subject.
-3. **Observation** — Producer self-report is not independent evidence.
-4. **Promotion** — No success signal automatically raises the authority state of an artifact.
-5. **Context** — A result cannot be treated as reproducible when its material execution context is unknown.
-
-See [`docs/DEVELOPMENT_KERNEL.md`](docs/DEVELOPMENT_KERNEL.md) for K1–K12, rigor levels, topology, and lifecycle semantics.
-
-## Maturity boundaries
-
-The alpha does **not** claim:
-
-- a finished generic Kernel implementation;
-- universal runtime adapters;
-- stable multi-runtime compatibility;
-- mandatory multi-agent workflows;
-- complete autonomous acceptance/promotion;
-- that a page probe equals extension-runtime or release/store evidence;
-- that runtime/session success implies project acceptance.
-
-LoomLoom deliberately keeps runtime-native session, trace, sandbox, approval, persistence, and subagent mechanics outside the Kernel unless cross-project evidence later justifies a shared abstraction.
+For a released LoomLoom version, the exact Git tag/commit and repository contents at that tag are the public distribution authority.
 
 ## Author
 
